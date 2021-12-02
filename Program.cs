@@ -117,8 +117,10 @@ class Program
         // AlumnoId multiplo de 2 y ModuloId Multiplo de 5;
         using (var db = new InstitutoContext())
         {
-           var matriculas = db.Matriculas;
-            foreach(var element in matriculas){ 
+            //crear variable de matriculas
+            var matriculas = db.Matriculas;
+            foreach(var element in matriculas){
+                //si es divisible
                 if (element.AlumnoID % 3 == 0 && element.AlumnoID % 2 == 0) {
                     Console.WriteLine(element.AlumnoID);
                     db.Matriculas.Remove(element);
@@ -128,6 +130,7 @@ class Program
                     db.Matriculas.Remove(element);
                 }
             }
+            //guardar cambios
             db.SaveChanges();
         }
     }
@@ -141,24 +144,54 @@ class Program
             // Aparecen los que tienen el cabello moreno
             WriteLine("query 1");
             var query1 = db.Alumnos.Where(o => o.Pelo == "Moreno");
-            foreach (var lista in query1){
-                Console.WriteLine(lista.Nombre);
-            }
-            
-            // Ordena los modulos
-            WriteLine("query 2");
-            var col3 = db.Matriculas.OrderBy(m => m.ModuloID);
-            foreach (var lista2 in col3){
-                WriteLine(lista2);
+            foreach (var lista1 in query1){
+                Console.WriteLine(lista1.Nombre);
             }
 
             // Aparecen los que tienen 20 años de edad
-            WriteLine("query 3");
+            WriteLine("query 2");
             var query2 = db.Alumnos.Where(o => o.Edad == 20);
-            foreach (var item in query2){
-                WriteLine(item);
+            foreach (var lista2 in query2){
+                WriteLine(lista2);
             }
             
+            // Ordering
+            WriteLine("query 3");
+            var query3 = db.Matriculas.OrderBy(m => m.ModuloID);
+            foreach (var lista3 in query3){
+                WriteLine(lista3);
+            }
+
+            WriteLine("query 4");
+            //Grouping
+            var query4 = from o in db.Alumnos 
+                         group o by o.AlumnoID into g
+                         select new{
+                             AlumnoID = g.Key,
+                             Total = g.Count()
+                         };
+                    foreach (var lista4 in query4)
+                        {
+                            WriteLine(lista4);
+                        }
+
+            //Joining
+            WriteLine("query 5");
+            var query5 = from c in db.Matriculas
+                         join o in db.Alumnos on
+                         c.AlumnoID equals o.AlumnoID
+                         select new {
+                             o.Nombre,
+                             o.Edad,
+                             o.Efectivo,
+                             o.Pelo
+                         };
+
+                    foreach (var lista5 in query5)
+                    {
+                        WriteLine(lista5);
+                    }
+
         }
     }
 
